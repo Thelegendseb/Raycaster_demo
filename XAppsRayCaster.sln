@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32505.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "XAppsRayCaster", "XAppsRayCaster.vbproj", "{89D9AB0C-6E2F-4CB5-9073-E7EBC5FB4A3D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89D9AB0C-6E2F-4CB5-9073-E7EBC5FB4A3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89D9AB0C-6E2F-4CB5-9073-E7EBC5FB4A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89D9AB0C-6E2F-4CB5-9073-E7EBC5FB4A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89D9AB0C-6E2F-4CB5-9073-E7EBC5FB4A3D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D3D76D1-90D4-423E-8CE3-9DFFDAA9CBF4}
+	EndGlobalSection
+EndGlobal
