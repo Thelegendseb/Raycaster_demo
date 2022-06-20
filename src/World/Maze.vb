@@ -27,6 +27,11 @@
         Return Me.Grid(Math.Floor(y / Me.CellSize),
                     Math.Floor(x / Me.CellSize))
     End Function
+    Public Function GetMaxDepth() As Double
+        Dim Length_h As Integer = Me.Grid.GetLength(0) * Me.CellSize
+        Dim Length_w As Integer = Me.Grid.GetLength(1) * Me.CellSize
+        Return Math.Sqrt(Length_h ^ 2 + Length_w ^ 2)
+    End Function
     Public Function GetCellSize() As Double
         Return Me.CellSize
     End Function

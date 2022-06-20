@@ -43,7 +43,6 @@ Public Class Player
             Dim CurrentRay As Ray = Rays(i)
             Dim CurrentRayLength As Double = CurrentRay.GetLength
             CurrentRayLength *= Math.Cos(Me.ThetaX - CurrentRay.GetTheta) 'fisheye fix
-
             If Not CurrentRayLength <= 0 Then
                 Dim RayHeight As Integer = CInt(ScreenHeight * proj / CurrentRayLength)
                 If RayHeight > ScreenHeight Then RayHeight = ScreenHeight
@@ -60,10 +59,10 @@ Public Class Player
                         Col = Color.FromArgb(CC, CC, 0)
                     Case 4
                         Col = Color.FromArgb(CC, CC, CC)
+
                     Case Else
                         Col = Color.FromArgb(0, CC, 0)
                 End Select
-
                 Dim Br As New SolidBrush(Col)
                 g.FillRectangle(Br, i * RayWidth, CSng(ViewOffset + ((ScreenHeight / 2) - (RayHeight / 2))),
                                 RayWidth, RayHeight)
