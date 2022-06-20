@@ -6,6 +6,8 @@
     Private Right As Keys
     Private TurnLeft As Keys
     Private TurnRight As Keys
+    Private TurnUp As Keys
+    Private TurnDown As Keys
     Sub New() 'Defualt Bindings
         Me.Forward = Keys.W
         Me.Backward = Keys.S
@@ -13,19 +15,25 @@
         Me.Right = Keys.D
         Me.TurnLeft = Keys.Left
         Me.TurnRight = Keys.Right
+        Me.TurnUp = Keys.Up
+        Me.TurnDown = Keys.Down
     End Sub
     Sub New(ByVal Forward As Keys,
             ByVal Backward As Keys,
             ByVal Left As Keys,
             ByVal Right As Keys,
             ByVal TurnLeft As Keys,
-            ByVal TurnRight As Keys)
+            ByVal TurnRight As Keys,
+            ByVal TurnUp As Keys,
+            ByVal TurnDown As Keys)
         Me.Forward = Forward
         Me.Backward = Backward
         Me.Left = Left
         Me.Right = Right
         Me.TurnLeft = TurnLeft
         Me.TurnRight = TurnRight
+        Me.TurnUp = TurnUp
+        Me.TurnDown = TurnDown
     End Sub
     '================================
     Public Sub SetForward(ByVal Key As Keys)
@@ -46,6 +54,12 @@
     Public Sub SetTurnRight(ByVal Key As Keys)
         Me.TurnRight = Key
     End Sub
+    Public Sub SetTurnUp(ByVal Key As Keys)
+        Me.TurnUp = Key
+    End Sub
+    Public Sub SetTurnDown(ByVal Key As Keys)
+        Me.TurnDown = Key
+    End Sub
     Public Function GetForward() As Keys
         Return Me.Forward
     End Function
@@ -63,5 +77,11 @@
     End Function
     Public Function GetTurnRight() As Keys
         Return Me.TurnRight
+    End Function
+    Public Function GetTurnUp() As Keys
+        Return Me.TurnUp
+    End Function
+    Public Function GetTurnDown() As Keys
+        Return Me.TurnDown
     End Function
 End Class

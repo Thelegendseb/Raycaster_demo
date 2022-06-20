@@ -1,12 +1,16 @@
 ﻿Imports XApps
 Public Class Entity
     Inherits XBase
+
+    Protected WorldPtr As World
     Protected Position As Vector
-    Protected Theta As Double
+    Protected ThetaX As Double
+    Protected ThetaY As Double
     Protected MoveSpeed As Double
     Protected TurnSpeed As Double
-    Sub New()
-        Position = Vector.Zero
+    Sub New(WorldPointer As World)
+        Me.WorldPtr = WorldPointer
+        Me.Position = Vector.Zero
         Me.SetUpdateStatus(True)
         Me.SetDrawStatus(True)
     End Sub
@@ -22,38 +26,94 @@ Public Class Entity
         '  Font.Dispose()
         g.FillRectangle(Brushes.Black, New Rectangle(Me.Position.X - 5, Me.Position.Y - 5, 10, 10))
         g.DrawLine(Pens.Black, CInt(Me.Position.X), CInt(Me.Position.Y),
-                   CInt((Me.Position.X + Math.Cos(Me.Theta) * 20)),
-                   CInt((Me.Position.Y + Math.Sin(Me.Theta) * 20)))
+                   CInt((Me.Position.X + Math.Cos(Me.ThetaX) * 20)),
+                   CInt((Me.Position.Y + Math.Sin(Me.ThetaX) * 20)))
     End Sub
     '==========================================
     Public Sub MoveForward()
-        Me.Position.X += Math.Cos(Me.Theta) * Me.MoveSpeed
-        Me.Position.Y += Math.Sin(Me.Theta) * Me.MoveSpeed
+        Me.Position.X += GetProjectedParallellDisplacementX()
+        Me.Position.Y += GetProjectedParallellDisplacementY()
     End Sub
     Public Sub MoveBackward()
-        Me.Position.X -= Math.Cos(Me.Theta) * Me.MoveSpeed
-        Me.Position.Y -= Math.Sin(Me.Theta) * Me.MoveSpeed
+        Me.Position.X -= GetProjectedParallellDisplacementX()
+        Me.Position.Y -= GetProjectedParallellDisplacementY()
     End Sub
     Public Sub MoveLeft()
-        Me.Position.X -= Math.Cos(Me.Theta + Math.PI / 2) * Me.MoveSpeed / 2
-        Me.Position.Y -= Math.Sin(Me.Theta + Math.PI / 2) * Me.MoveSpeed / 2
+        Me.Position.X -= GetProjectedPerpendicularDisplacementX()
+        Me.Position.Y -= GetProjectedPerpendicularDisplacementY()
     End Sub
     Public Sub MoveRight()
-        Me.Position.X += Math.Cos(Me.Theta + Math.PI / 2) * Me.MoveSpeed / 2
-        Me.Position.Y += Math.Sin(Me.Theta + Math.PI / 2) * Me.MoveSpeed / 2
+        Me.Position.X += GetProjectedPerpendicularDisplacementX()
+        Me.Position.Y += GetProjectedPerpendicularDisplacementY()
     End Sub
     Public Sub TurnLeft()
-        Me.Theta -= Me.TurnSpeed
+        Me.ThetaX -= Me.TurnSpeed
     End Sub
     Public Sub TurnRight()
-        Me.Theta += Me.TurnSpeed
+        Me.ThetaX += Me.TurnSpeed
     End Sub
+    Public Sub TurnUp()
+        Me.ThetaY += Me.TurnSpeed
+    End Sub
+    Public Sub TurnDown()
+        Me.ThetaY -= Me.TurnSpeed
+    End Sub
+    '----------------------------------
+    Public Function CollisionOccuringForward()
+        Dim ProjectedPositionX As Double = Me.Position.X + GetProjectedParallellDisplacementX() * 2
+        Dim ProjectedPositionY As Double = Me.Position.Y + GetProjectedParallellDisplacementY() * 2
+        If Me.WorldPtr.GetMaze.GetCellAtPoint(ProjectedPositionX, ProjectedPositionY) <> 0 Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+    Public Function CollisionOccuringBackward()
+        Dim ProjectedPositionX As Double = Me.Position.X - GetProjectedParallellDisplacementX() * 2
+        Dim ProjectedPositionY As Double = Me.Position.Y - GetProjectedParallellDisplacementY() * 2
+        If Me.WorldPtr.GetMaze.GetCellAtPoint(ProjectedPositionX, ProjectedPositionY) <> 0 Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+    Public Function CollisionOccuringLeft()
+        Dim ProjectedPositionX As Double = Me.Position.X - GetProjectedPerpendicularDisplacementX() * 2
+        Dim ProjectedPositionY As Double = Me.Position.Y - GetProjectedPerpendicularDisplacementY() * 2
+        If Me.WorldPtr.GetMaze.GetCellAtPoint(ProjectedPositionX, ProjectedPositionY) <> 0 Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+    Public Function CollisionOccuringRight()
+        Dim ProjectedPositionX As Double = Me.Position.X + GetProjectedPerpendicularDisplacementX() * 2
+        Dim ProjectedPositionY As Double = Me.Position.Y + GetProjectedPerpendicularDisplacementY() * 2
+        If Me.WorldPtr.GetMaze.GetCellAtPoint(ProjectedPositionX, ProjectedPositionY) <> 0 Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+    '----------------------------------
+    Protected Function GetProjectedParallellDisplacementX() As Double
+        Return Math.Cos(Me.ThetaX) * Me.MoveSpeed
+    End Function
+    Protected Function GetProjectedParallellDisplacementY() As Double
+        Return Math.Sin(Me.ThetaX) * Me.MoveSpeed
+    End Function
+    Protected Function GetProjectedPerpendicularDisplacementX() As Double
+        Return Math.Cos(Me.ThetaX + Math.PI / 2) * Me.MoveSpeed / 2
+    End Function
+    Protected Function GetProjectedPerpendicularDisplacementY() As Double
+        Return Math.Sin(Me.ThetaX + Math.PI / 2) * Me.MoveSpeed / 2
+    End Function
     '==========================================
     Private Sub ThetaCheck()
-        If Me.Theta < 0 Then
-            Me.Theta += 2 * Math.PI
-        ElseIf Me.Theta > 2 * Math.PI Then
-            Me.Theta -= 2 * Math.PI
+        If Me.ThetaX < 0 Then
+            Me.ThetaX += 2 * Math.PI
+        ElseIf Me.ThetaX > 2 * Math.PI Then
+            Me.ThetaX -= 2 * Math.PI
         End If
     End Sub
     Protected Sub BoundCheck(Bounds As Rectangle)
@@ -78,7 +138,7 @@ Public Class Entity
         Me.Position.Y = val
     End Sub
     Public Sub SetTheta(val As Double)
-        Me.Theta = val
+        Me.ThetaX = val
     End Sub
     Public Sub SetMoveSpeed(val As Double)
         Me.MoveSpeed = val
@@ -92,8 +152,11 @@ Public Class Entity
     Public Function GetY() As Double
         Return Me.Position.Y
     End Function
-    Public Function GetTheta() As Double
-        Return Me.Theta
+    Public Function GetThetaX() As Double
+        Return Me.ThetaX
+    End Function
+    Public Function GetThetaY() As Double
+        Return Me.ThetaY
     End Function
     Public Function GetMoveSpeed() As Double
         Return Me.MoveSpeed

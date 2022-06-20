@@ -2,8 +2,9 @@
 Public Class Form1
     Private App As XApp
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        'Me.FormBorderStyle = FormBorderStyle.None
+        Me.FormBorderStyle = FormBorderStyle.None
         Me.WindowState = FormWindowState.Maximized
+        Cursor.Hide()
         Me.CenterToScreen()
         Me.App = New MazeMapper(Me)
     End Sub

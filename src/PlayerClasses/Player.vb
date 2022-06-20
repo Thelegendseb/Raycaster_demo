@@ -1,18 +1,16 @@
 ﻿Imports XApps
 Public Class Player
     Inherits Entity
-    Public Mapper As EntityMapper 'public to allow access from the mappers keybind methods
-    Private WorldPtr As World
+    Public Mapper As EntityMapper
     Private ViewDensity As Integer
     Private FOV As Double 'In radians
     Private Depth As Double
     Private SightAccuracy As Double
 
-    'allows movement through keypresses
     Sub New(KeyBinds As EntityKeybinds,
             WorldPointer As World)
 
-        MyBase.New()
+        MyBase.New(WorldPointer)
 
         Me.ViewDensity = 200
         Me.FOV = 0.75F * Math.PI
@@ -24,7 +22,6 @@ Public Class Player
     End Sub
     Public Overrides Sub Update(Session As XSession)
         MyBase.Update(Session)
-        BoundCheck(WorldPtr.GetBounds)
     End Sub
     Public Overrides Sub Draw(ByRef g As Graphics)
         DrawView(g)
@@ -33,21 +30,42 @@ Public Class Player
         Dim Rays() As Ray = GetView()
         Dim ScreenWidth As Integer = g.VisibleClipBounds.Width ' screem width
         Dim ScreenHeight As Integer = g.VisibleClipBounds.Height ' screem height
-        Dim RayWidth As Integer = ScreenWidth / Rays.Length
 
+        Dim ViewOffset As Integer = CInt(Me.ThetaY * 180 / Math.PI) * 10
+
+        Dim RayWidth As Integer = ScreenWidth / Rays.Length
         Dim proj As Single = Me.WorldPtr.GetMaze.GetCellSize / Math.Tan(Me.FOV / 2)
+
+        g.FillRectangle(Brushes.Blue, 0, 0, ScreenWidth, CInt(ScreenHeight / 2) + ViewOffset)
+        g.FillRectangle(Brushes.Green, 0, CInt(ScreenHeight / 2) + ViewOffset, ScreenWidth, CInt(ScreenHeight / 2) - ViewOffset)
+
         For i = 0 To Rays.Length - 1
             Dim CurrentRay As Ray = Rays(i)
             Dim CurrentRayLength As Double = CurrentRay.GetLength
-            CurrentRayLength *= Math.Cos(Me.Theta - CurrentRay.GetTheta)
+            CurrentRayLength *= Math.Cos(Me.ThetaX - CurrentRay.GetTheta) 'fisheye fix
 
             If Not CurrentRayLength <= 0 Then
                 Dim RayHeight As Integer = CInt(ScreenHeight * proj / CurrentRayLength)
                 If RayHeight > ScreenHeight Then RayHeight = ScreenHeight
-                Dim CC As Byte = CByte(XMath.Map(RayHeight, 0, ScreenHeight, 100, 255))
-                Dim Col As Color = Color.FromArgb(CC, 0, CC)
+                Dim CC As Byte = CByte(XMath.Map(RayHeight, 0, ScreenHeight, 50, 255))
+
+                Dim Col As Color
+
+                Select Case CurrentRay.GetCellHit
+                    Case 1
+                        Col = Color.FromArgb(CC, 0, 0)
+                    Case 2
+                        Col = Color.FromArgb(CC, 0, CC)
+                    Case 3
+                        Col = Color.FromArgb(CC, CC, 0)
+                    Case 4
+                        Col = Color.FromArgb(CC, CC, CC)
+                    Case Else
+                        Col = Color.FromArgb(0, CC, 0)
+                End Select
+
                 Dim Br As New SolidBrush(Col)
-                g.FillRectangle(Br, i * RayWidth, CInt((ScreenHeight / 2) - (RayHeight / 2)),
+                g.FillRectangle(Br, i * RayWidth, CSng(ViewOffset + ((ScreenHeight / 2) - (RayHeight / 2))),
                                 RayWidth, RayHeight)
                 Br.Dispose()
             End If
@@ -59,7 +77,7 @@ Public Class Player
         Dim Counter As Integer = 0
         For i = -Me.FOV / 2 To Me.FOV / 2 Step Me.FOV / Me.ViewDensity
             ReDim Preserve Rays(Counter)
-            Dim Theta As Double = Me.Theta + i
+            Dim Theta As Double = Me.ThetaX + i
             If Theta < 0 Then Theta += Math.PI * 2
             If Theta > Math.PI * 2 Then Theta -= Math.PI * 2
             Rays(Counter) = New Ray(Me.Position)
